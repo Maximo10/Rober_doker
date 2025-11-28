@@ -1,0 +1,24 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: mongodb_Local    
+    ports:
+      - "27017:27017"    
+    environment:
+      MONGO_INITDB_DATABASE: mydatabase
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example7899    
+    volumes:
+      - mongo_data:/data/db
+
+  app:
+    build: .
+    container_name: api_contenedor
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URI: "mongodb://root:example7899@mongo:27017/mydatabase?authSource=admin"
+    depends_on:
+      - mongo
+volumes:
+  mongo_data:
