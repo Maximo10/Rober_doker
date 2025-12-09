@@ -12,8 +12,8 @@ services:
       - mongo_data:/data/db
 
   app:
-    build: .
-    container_name: api_contenedor
+    image: ejemplo_api:v1.0.0
+    container_name: contenedro_api
     ports:
       - "3000:3000"
     environment:
