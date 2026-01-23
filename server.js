@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 
 async function main() {
-    const DB_URI = process.env.MONGO_URI || "mongodb://localhost:27017/mydatabase";
+    const DB_URI = process.env.MONGO_URI || "mongodb://host.docker.internal:27017/mydatabase";
     try{
         await mongoose.connect(DB_URI);
         console.log("Conexion a la base de datos exitosa");
@@ -31,6 +31,10 @@ async function main() {
             ]);
             console.log("Ingresados grupos predeterminados");
         }
+
+        app.get("/",async (req, res) => {
+            res.json({message: "Webhook funcionando correctamente"});
+        });
 
         //emdpoint Usuarios 
         app.get("/usuarios", async (req, res) => {
@@ -114,9 +118,7 @@ async function main() {
         });
 
         const PORT = 3000;
-        app.listen(PORT, () => {
-            console.log(`El servidor esta fincionando en http://localhost:${PORT}`);
-        });
+        app.listen(PORT, () => console.log(`El servidor esta fincionando en http://localhost:${PORT}`));
     }
     catch (error){
         console.error("Error en la conexion con la Base:", error);
