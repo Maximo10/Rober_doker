@@ -1,14 +1,18 @@
+import dotenv from 'dotenv';
 import express from "express";
 import mongoose from "mongoose";
 import usuer from "./api/usuer.js";
 import grupo from "./api/grupo.js";
+import { serve } from 'inngest/express';
+import { NotiNewUser } from "./tele_noti.js"
+import { inngest } from './cliente.js';
 
-
+dotenv.config();
 const app = express();
 app.use(express.json());
 
 async function main() {
-    const DB_URI = process.env.MONGO_URI || "mongodb://host.docker.internal:27017/mydatabase";
+    const DB_URI = process.env.MONGO_URI || "mongodb://localhost:27017/mydatabase";
     try{
         await mongoose.connect(DB_URI);
         console.log("Conexion a la base de datos exitosa");
@@ -20,7 +24,7 @@ async function main() {
                 {name: "Lopez", email: "lopezmartinez@gmail.com", edad: 25},
                 {name: "Garcia", email: "garciarodriguez@gmail.com", edad: 28}
             ]);
-            console.log(" Ingresados usuarios predeterminados");
+            console.log("📌 Usuarios predeterminados insertados");
         }
         const gru_prede= await grupo.countDocuments();
         if (gru_prede === 0){
@@ -29,9 +33,12 @@ async function main() {
                 {nombre: "Moderator", num_users: 20},
                 {nombre: "User", num_users: 12}
             ]);
-            console.log("Ingresados grupos predeterminados");
+            console.log("📌 Grupos predeterminados insertados");
         }
-
+        app.use('/api/inngest', serve({
+            client: inngest,
+            functions: [NotiNewUser],
+        }));        
         app.get("/",async (req, res) => {
             res.json({message: "Webhook funcionando correctamente"});
         });
@@ -45,6 +52,15 @@ async function main() {
             try {
                 const newUser = new usuer(req.body);
                 const savedUser = await newUser.save();
+                await inngest.send({
+                    name:"nuevo.usuario",
+                    data:{
+                        name:savedUser.name,
+                        email:savedUser.email,
+                        edad:savedUser.edad,
+                        fecha: new Date().toISOString()
+                    }
+                });
                 res.status(201).json(savedUser);
             } catch (error) {
                 res.status(400).json({ message: error.message });
@@ -118,7 +134,11 @@ async function main() {
         });
 
         const PORT = 3000;
-        app.listen(PORT, () => console.log(`El servidor esta fincionando en http://localhost:${PORT}`));
+        app.listen(PORT, () =>{
+            console.log(`🚀El servidor esta fincionando en http://localhost:${PORT}`);
+            console.log(`💾EL servido Innges y MongoDB estan operando...`);
+            console.log(`🚀 Servidor INGEST: http://localhost:8288`);
+        });
     }
     catch (error){
         console.error("Error en la conexion con la Base:", error);
