@@ -62,7 +62,7 @@ ID_CHAT_TELEGRAM=tu_chat_id
 1. Ir a https://api.telegram.org/bot<TU_TOKEN>/getUpdates, esto es la api de telegram en donde te facilitara obtener tu chat id, para ello deviste de iniciar el chat o mandar algo.
 2. Pegar esa url en tu navegador.
 
-![Chat id](Innges_Img/id_chat.png)
+![Chat id](Innges_Img/)
 
 ## Instalar Dependencias
 
@@ -108,4 +108,5 @@ Para esta prueba podemos usar deferentes opcion en mi caso use la extension Thun
 ## Comprobacion en el servidor de ingest
 
 ![Mensaje del usuario en telegram](imagenesDocu/img11.png)
+
 
